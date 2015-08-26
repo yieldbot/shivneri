@@ -16,7 +16,7 @@ It reads messages from kafka and inserts them in couchbase
 
 ## Examples
 
-java -jar shivneri-0.1.0-SNAPSHOT-standalone.jar  -g shivneri.prod -k server1.kafka.com:2181/kafka -t adimpression -b adimpression -c cb1.com,cb2.com
+    java -jar shivneri-0.1.0-SNAPSHOT-standalone.jar  -g shivneri.prod -k server1.kafka.com:2181/kafka -t adimpression -b adimpression -c cb1.com,cb2.com
 
 ### Bugs
 
