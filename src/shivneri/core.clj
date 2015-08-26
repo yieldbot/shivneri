@@ -23,7 +23,14 @@
     (p/multi-insert bucket cb-docs :if-exists :supersede)))
 
 (def cli-options
-  [["-c" "--config-file CONFIG-FILE" "Config file "]
+  [["-g" "--group.id GROUP.ID" "Kafka Consumer group id"]
+   ["-k" "--kafka.zk.connect KAFKA.ZK.CONNECT" "zookeeper host:port/chroot e.g localhost:2181/kafka"]
+   ["-t" "--topic.name TOPIC.NAME" "Name of the kafka topic to consume"]
+   ["-p" "--health.port HEALTH.PORT" "Port to listen for health requests"]
+   ["-b" "--couchbase.bucket COUCHBASE.BUCKET" "Name of couchbase bucket to insert kafka messages"]
+   ["-c" "--couchbase.hosts COUCHBASE.HOSTS" "Comma separated list of couchbase hosts"]
+   ["-s" "--batch.size" "BATCH.SIZE" "Kafka batch processing size"
+    :default 1000]
    ["-h" "--help"]])
 
 (defn error-msg [errors]
@@ -34,26 +41,26 @@
   (println msg)
   (System/exit status))
 
-(defn  load-resource
-  [config-file]
-  (let [thr (Thread/currentThread)
-        ldr (.getContextClassLoader thr)]
-    (read-string (slurp (.getResourceAsStream ldr config-file)))))
+(defn verify-options
+  [options summary errors]
+  (cond
+    (:help options) (exit 0 summary)
+    (not (:group.id options)) (exit 1 (str "group.id not passed usage=" summary))
+    (not (:kafka.zk.connect options)) (exit 1 (str "kafka.zk.connect not passed usage=" summary))
+    (not (:topic.name options)) (exit 1 (str "topic.name not passed usage=" summary))
+    (not (:couchbase.bucket options)) (exit 1 (str "couchbase.bucket not passed usage=" summary))
+    (not (:couchbase.hosts options)) (exit 1 (str "couchbase.hosts not passed usage=" summary))
+    errors (exit 2 error-msg errors)))
 
 (defn -main
   "main func "
   [& args]
   (let [{:keys [options arguments summary errors]} (parse-opts args cli-options)]
-    (cond
-      (:help options) (exit 0 summary)
-      (not (:config-file options)) (exit 1 (str "config-file not passed usage=" summary))
-      errors (exit 2 error-msg errors))
-    (let [{:keys [config-file]} options
-          cprops (load-resource config-file)]
-      (log/info "running with config-file=" config-file " edn.data=" cprops)
-      (try
-        (torna/read-kafka cprops handle-kafka-batch)
-        (catch Exception e
-          (do
-            (.printStackTrace e)
-            (System/exit 2)))))))
+    (verify-options options summary errors)
+    (log/info "running with props=" (assoc options :couchbase.hosts (into [] (.split (get options :couchbase.hosts) ","))))
+    (try
+      (torna/read-kafka options handle-kafka-batch)
+      (catch Exception e
+        (do
+          (.printStackTrace e)
+          (System/exit 2))))))
