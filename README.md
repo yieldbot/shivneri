@@ -7,12 +7,19 @@ It reads messages from kafka and inserts them in couchbase
 ## Options
 
   -g, --group.id GROUP.ID (REQUIRED)                  Kafka Consumer group id
+  
   -k, --kafka.zk.connect KAFKA.ZK.CONNECT (REQUIRED)  zookeeper host:port/chroot e.g localhost:2181/kafka
+  
   -t, --topic.name TOPIC.NAME (REQUIRED)              Name of the kafka topic to consume
+  
   -p, --health.port HEALTH.PORT                       Port to listen for health requests
+  
   -b, --couchbase.bucket COUCHBASE.BUCKET (REQUIRED)  Name of couchbase bucket to insert kafka messages
+  
   -c, --couchbase.hosts COUCHBASE.HOSTS (REQUIRED)    Comma separated list of couchbase hosts
+  
   -s, --batch.size                                    BATCH.SIZE
+  
   -h, --help
 
 ## Examples
