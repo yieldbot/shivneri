@@ -18,14 +18,10 @@ It reads messages from kafka and inserts them in couchbase
 
     java -jar shivneri-0.1.0-SNAPSHOT-standalone.jar  -g shivneri.prod -k server1.kafka.com:2181/kafka -t adimpression -b adimpression -c cb1.com,cb2.com
 
-### Bugs
-
-...
-
 
 ## License
 
-Copyright © 2015 FIXME
+Copyright © 2016 Yieldbot Inc
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
